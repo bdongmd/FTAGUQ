@@ -4,9 +4,6 @@ import tensorflow_addons as tfa
 
 from DL1_model.models.maxout_layers import Maxout1D
 
-DL1_layers = [ 72, 57, 60, 48, 36,24, 12, 6]
-DL1_dropouts = [0.1, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]
-
 def DL1Model(InputShape, h_layers, lr=0.01, drops=None, dropout=True):
 	In = keras.layers.Input(shape=[InputShape,])
 	x = In
