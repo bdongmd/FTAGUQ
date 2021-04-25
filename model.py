@@ -41,10 +41,9 @@ def private_DL1Model(InputShape, h_layers, lr=0.01, drops=None, dropout=True, ba
 	In = keras.layers.Input(shape=[InputShape,])
 	x = In
 	for i, h in enumerate(h_layers[:]):
-		x = keras.layers.Dense(h, activation="linear",kernel_initializer='glorot_uniform')(x)
-		x = keras.layers.BatchNormalization()(x)
-		x = keras.layers.Activation("relu")(x)
+		x = keras.layers.Dense(h, activation="relu",kernel_initializer='glorot_uniform')(x)
 		x = keras.layers.Dropout(drops[i])(x, training=dropout)
+		x = keras.layers.BatchNormalization()(x)
 
 	predictions = keras.layers.Dense(3, activation='softmax', kernel_initializer='glorot_uniform')(x)
 
