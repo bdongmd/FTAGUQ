@@ -36,7 +36,7 @@ Y_test = h5f_test['Y_test'][:]
 
 InputShape=44
 h_layers=[72, 57, 60, 48, 36, 24, 12, 6]
-lr = 0.01
+lr = 0.005
 drops=[0.1, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]
 dropout=True
 batch_size = args.batch_size
@@ -64,4 +64,4 @@ history = DL1model.fit(X_train, Y_train,
                     callbacks=callbacks
                     )
 
-model.save("DL1_hybrid_2M_b{}_e{}.h5".format(batch_size, epoch))
+DL1model.save("models/DL1_hybrid_2M_b{}_e{}.h5".format(args.batch_size, args.epoch))
