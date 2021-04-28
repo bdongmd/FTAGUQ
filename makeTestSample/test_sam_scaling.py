@@ -4,6 +4,23 @@ from numpy.lib.recfunctions import repack_fields
 import pandas as pd
 import json
 from keras.utils import np_utils
+import sys
+import argparse
+
+parser = argparse.ArgumentParser(
+	description = 'Options for making the testing files'
+)
+parser.add_argument('-i', '--input_file', type=str,
+				default="/eos/user/b/bdong/DUQ/ttbar_merged_even_bjets.h5",
+				help='Set name of preprocessed input file')
+parser.add_argument('-o', '--output_file', type=str,
+				default="./MC16d_ttbar-test-even-bjets.h5",
+				help='Set name of output file')
+parser.add_argument('-n', '--njets', type=int,
+				default = 1000,
+				help='Set number of jets')
+
+args = parser.parse_args()
 
 def Gen_default_dict(scale_dict):
 	"""Generates default value dictionary from scale/shift dictionary."""
@@ -36,7 +53,7 @@ def GetTestSample(jets):
 		if 'isDefaults' in elem['name']:
 			continue
 		if elem['name'] not in var_names:
-			continue
+			sys.exit('missing {} in testing dataset input'.format(elem['name']))
 		else:
 			jets[elem['name']] = ((jets[elem['name']] + elem['shift']) * elem['scale'])
 			
@@ -47,16 +64,15 @@ def GetTestSample(jets):
 	
 	return jets.values, jets_pt_eta.to_records(index=False), labels, labels_cat
 
-Njets = 1000000 
+Njets = args.njets 
 
-file_path = "/eos/user/b/bdong/DUQ/"
-ttbar_files = file_path + "ttbar_merged_even_cjets.h5"
+ttbar_files = args.input_file
 
 df_tt_u = h5py.File(ttbar_files.format("u"), "r")['jets'][:Njets]
 
 X_test, jpt, labels, Y_test = GetTestSample(df_tt_u)
-outfile_name = "./MC16_ttbar-test-even-cjets.h5"
-h5f = h5py.File(outfile_name, 'w')
+outfile_names = args.outfile_name
+h5f = h5py.File(outfile_names, 'w')
 h5f.create_dataset('X_test', data=X_test, compression='gzip')
 h5f.create_dataset('Y_test', data=Y_test, compression='gzip')
 h5f.create_dataset('pt_eta', data=jpt, compression='gzip')
