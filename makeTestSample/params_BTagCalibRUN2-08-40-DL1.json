@@ -1,12 +1,12 @@
 [
     {
-        "default": null,
+        "default": 0,
         "shift": -0.9856052398681641,
         "name": "abs_eta_uncalib",
         "scale": 1.5265974585304871
     },
     {
-        "default": null,
+        "default": 0,
         "shift": -159402.65625,
         "name": "pt_uncalib",
         "scale": 4.1431180575664244e-06
