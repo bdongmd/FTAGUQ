@@ -4,6 +4,7 @@ import h5py
 import model
 import tensorflow as tf
 from itertools import compress
+import timeit
 
 from keras.models import load_model
 from keras.utils import np_utils
@@ -43,7 +44,7 @@ else:
 f = h5py.File(args.validation_file, 'r')
 print('loading dataset: ', args.validation_file)
 
-publicDL1 = False
+publicDL1 = True
 if publicDL1:
 	test_model =  tf.keras.models.load_model('DL1_model/DL1_AntiKt4EMTopo')
 	test_model_Dropout =  tf.keras.models.load_model('DL1_model/DL1_AntiKt4EMTopo_dropout')
@@ -58,9 +59,9 @@ else:
 	test_model.load_weights('models/DL1_hybrid_2M_b3000_e1.h5')
 	test_model_Dropout.load_weights('models/DL1_hybrid_2M_b3000_e1.h5')
 
-X_test = f['X_test'][:]
+X_test = f['X_test'][0:100]
 #Y_test = f['Y_test'][:]
-labels = f['labels'][:]
+labels = f['labels'][0:100]
 
 ## selecte light jets, in future can selecte this at file preparation stage
 light_X = np.array(list(compress(X_test, labels==0)))
@@ -81,18 +82,22 @@ mistag_light_X = np.array(list(compress(light_X, nodropout_DL1>DL1_cut)))
 print('Progress -- evaluted light jets with dropout disabled')
 
 ## evaluate mis-tagged light jets with dropout enabled
+init = timeit.default_timer()
 test_data = mistag_light_X.tolist() * n_predictions
+print(len(test_data))
 dropout = test_model_Dropout.predict(test_data)
 print('Progress -- evaluated mis-tagged light jets with dropout enabled')
 
 dropout_DL1 = np.log(dropout[:,2] / (fc*dropout[:,1] + (1-fc)*dropout[:,0]))
 print('Progress -- output processed, saving output.')
+final = timeit.default_timer()
+print('time used to evalute jets: {}s'.format(final-init))
 
 fout = h5py.File(args.output, 'w')
-fout.create_dataset('l_score_nodropout', data=np.array(list(compress(nodropout_l, npdropout_DL1>DL1_cut))))
-fout.create_dataset('c_score_nodropout', data=np.array(list(compress(nodropout_c, npdropout_DL1>DL1_cut))))
-fout.create_dataset('b_score_nodropout', data=np.array(list(compress(nodropout_b, npdropout_DL1>DL1_cut))))
-fout.create_dataset('DL1_score_nodropout', data=np.array(list(compress(nodropout_b, npdropout_DL1>DL1_cut))))
+fout.create_dataset('l_score_nodropout', data=np.array(list(compress(nodropout_l, nodropout_DL1>DL1_cut))))
+fout.create_dataset('c_score_nodropout', data=np.array(list(compress(nodropout_c, nodropout_DL1>DL1_cut))))
+fout.create_dataset('b_score_nodropout', data=np.array(list(compress(nodropout_b, nodropout_DL1>DL1_cut))))
+fout.create_dataset('DL1_score_nodropout', data=np.array(list(compress(nodropout_b, nodropout_DL1>DL1_cut))))
 fout.create_dataset('l_score_dropout', data=np.array(dropout[:,0]))
 fout.create_dataset('c_score_dropout', data=np.array(dropout[:,1]))
 fout.create_dataset('b_score_dropout', data=np.array(dropout[:,2]))
