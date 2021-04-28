@@ -68,8 +68,8 @@ else:
 	test_model.load_weights('models/DL1_hybrid_2M_b3000_e1.h5')
 	test_model_Dropout.load_weights('models/DL1_hybrid_2M_b3000_e1.h5')
 
-X_test = f['X_test'][0:1000]
-labels = f['labels'][0:1000]
+X_test = f['X_test'][:]
+labels = f['labels'][:]
 
 ## selecte light jets, in future can selecte this at file preparation stage
 select_jets_X = np.array(list(compress(X_test, labels==args.label)))
