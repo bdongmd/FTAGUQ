@@ -11,6 +11,9 @@ __pycache__/
 *.hdf
 *.hdf5
 
+# models directory
+models/
+
 # Distribution / packaging
 .Python
 build/
