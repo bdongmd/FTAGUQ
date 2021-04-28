@@ -79,7 +79,7 @@ with open("DL1_Variables.json") as vardict:
 	var_names = json.load(vardict)[:]
 
 def GetTestSample(jets):
-	with open("params_MC16D-ext_2018-PFlow_70-8M_mu.json", 'r') as infile:
+	with open("params_BTagCalibRUN2-08-40-DL1.json", 'r') as infile:
 		scale_dict = json.load(infile)
 		
 	jets = pd.DataFrame(jets)
@@ -99,7 +99,7 @@ def GetTestSample(jets):
 		if elem['name'] not in var_names:
 			continue
 		else:
-			jets[elem['name']] = ((jets[elem['name']] - elem['shift']) / elem['scale'])
+			jets[elem['name']] = ((jets[elem['name']] + elem['shift']) * elem['scale'])
 			
 	labels_cat = np.copy(labels)
 	labels_cat[labels_cat==5] = 2
@@ -108,15 +108,15 @@ def GetTestSample(jets):
 	
 	return jets.values, jets_pt_eta.to_records(index=False), labels, labels_cat
 
-Njets = 50000 
+Njets = 1000000 
 
-file_path = "/eos/user/b/bdong/DUQ"
-ttbar_files = file_path + "/MC16d_hybrid_even_100_PFlow-pTcuts-{}jets-tutorial-file_merged.h5"
+file_path = "/eos/user/b/bdong/DUQ/"
+ttbar_files = file_path + "ttbar_merged_even_cjets.h5"
 
 df_tt_u = h5py.File(ttbar_files.format("u"), "r")['jets'][:Njets]
 
 X_test, jpt, labels, Y_test = GetTestSample(df_tt_u)
-outfile_name = "./MC16_ttbar-test-ujets.h5"
+outfile_name = "./MC16_ttbar-test-even-cjets.h5"
 h5f = h5py.File(outfile_name, 'w')
 h5f.create_dataset('X_test', data=X_test, compression='gzip')
 h5f.create_dataset('Y_test', data=Y_test, compression='gzip')
