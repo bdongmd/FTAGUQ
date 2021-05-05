@@ -1,11 +1,16 @@
 import numpy as np
-import os
 import h5py
 import model
 import tensorflow as tf
 from itertools import compress
-import timeit
+from scipy import stats
+import matplotlib.pyplot as plt
+import matplotlib.backends.backend_pdf
+
+import os
 import sys
+import timeit
+from datetime import datetime
 
 from keras.models import load_model
 from keras.utils import np_utils
@@ -85,19 +90,8 @@ nodropout_DL1 = np.log(nodropout_b/(fc*nodropout_c+(1-fc)*nodropout_l))
 
 ## get mis-tagged light jets
 btagged_X = np.array(list(compress(select_jets_X, nodropout_DL1>DL1_cut)))
+btagged_DL1 = np.array(list(compress(nodropout_DL1, nodropout_DL1>DL1_cut)))
 print('Progress -- evaluted jets with dropout disabled')
-
-## evaluate b-tagged jets with dropout enabled
-init = timeit.default_timer()
-test_data = btagged_X.tolist() * n_predictions
-dropout = test_model_Dropout.predict(test_data)
-print('Progress -- evaluated mis-tagged light jets with dropout enabled')
-
-dropout_DL1 = np.log(dropout[:,2] / (fc*dropout[:,1] + (1-fc)*dropout[:,0]))
-print('Progress -- output processed, saving output.')
-
-final = timeit.default_timer()
-print('time used to evalute jets: {}s'.format(final-init))
 
 print('total processed jets: {}'.format(select_jets_X.size / 41.))
 print('{} jets tagged as b-jets'.format(btagged_X.size / 41.))
@@ -107,13 +101,80 @@ else:
 	print('mis-tag rate: {} %'.format(btagged_X.size / select_jets_X.size * 100))
 
 
-fout = h5py.File(args.output, 'w')
-fout.create_dataset('l_score_nodropout', data=np.array(list(compress(nodropout_l, nodropout_DL1>DL1_cut))))
-fout.create_dataset('c_score_nodropout', data=np.array(list(compress(nodropout_c, nodropout_DL1>DL1_cut))))
-fout.create_dataset('b_score_nodropout', data=np.array(list(compress(nodropout_b, nodropout_DL1>DL1_cut))))
-fout.create_dataset('DL1_score_nodropout', data=np.array(list(compress(nodropout_b, nodropout_DL1>DL1_cut))))
-fout.create_dataset('l_score_dropout', data=np.array(dropout[:,0]))
-fout.create_dataset('c_score_dropout', data=np.array(dropout[:,1]))
-fout.create_dataset('b_score_dropout', data=np.array(dropout[:,2]))
-fout.create_dataset('DL1_score_dropout', data=np.array(dropout_DL1))
-fout.close()
+saveData = True
+doPlotting = True
+bins = 200
+verbose = 0
+
+## evaluate b-tagged jets with dropout enabled
+significance = []
+DL1_std = []
+jet_acc = []
+
+lbound = 0.158655524
+ubound = 0.841344746
+
+init = timeit.default_timer()
+print('{}  Progress -- evaluating b-tagged jets with dropout enabled'.format(datetime.now().strftime(%H:%M:%S)))
+print('Estimated time to evaluate {} jets: {}'.format(btagged_X.size / 41, btagged_X.size / 41 * 0.82))
+for j in range(int(btagged_X.size / 41)):
+	test_data =  np.vstack([btagged_X[j]] * n_predictions)
+	dropout = test_model_Dropout.predict(test_data, verbose = verbose)
+	
+	dropout_DL1 = np.log(dropout[:,2] / (fc*dropout[:,1] + (1-fc)*dropout[:,0]))
+
+	CI = np.quantile(dropout_DL1, [lbound, ubound], axis=0)
+	DL1mean = np.mean(dropout_DL1)
+	jet_acc.append(np.array(dropout_DL1)[np.array(dropout_DL1) > DL1_cut].size / n_predictions)
+	if DL1_cut < DL1mean :
+		significance.append((DL1mean - DL1_cut) / np.sqrt((DL1mean - CI[0])**2))
+		DL1_std.append((DL1mean-CI[0])**2)
+	else:
+		significance.append((DL1mean - DL1_cut) / np.sqrt((DL1mean - CI[1])**2))
+		DL1_std.append((DL1mean-CI[1])**2)
+
+	probability = stats.norm.cdf(significance)
+
+final = timeit.default_timer()
+print('Time used to evalute jets: {}s'.format(final-init))
+
+if doPlotting:
+	print("{}  Progress -- plotting.".format(datetime.now().strftime("%H:%M:%s")))
+	pdf = matplotlib.backends.backend_pdf.PdfPages("output/results.pdf")
+
+	fig, ax = plt.subplots(figsize=(10,10), ncols=1, nrows=1)
+	ax.plot(significance, probability, 'o')
+	ax.set_ylabel("Classification Probability")
+	ax.set_xlabel("Classification Significance")
+	pdf.savefig()
+	fig.clear()
+	plt.close(fig)
+
+	fig, ax = plt.subplots(figsize=(10,10), ncols=1, nrows=1)
+	ax.hist(np.array(significance), bins=bins, range=[-5,5], density=True, label="Dropout Calculated", alpha=0.7)
+	ax.hist(stats.norm.ppf(jet_acc), bins=bins, range=[-5,5], density=True, label="Dropout Observed", alpha=0.7)
+	ax.set_ylabel("Density")
+	ax.set_xlabel("Significance")
+	ax.legend()
+	pdf.savefig()
+	fig.clear()
+	plt.close(fig)
+
+	fig, ax = plt.subplots(figsize=(10,10), ncols=1, nrows=1)
+	ax.hist(np.array(probability), bins=bins, range=[0,1], density=True, label="Dropout Calculated", alpha=0.7)
+	ax.hist(np.array(jet_acc), bins=bins, range=[0,1], density=True, label="Dropout Observed", alpha=0.7)
+	ax.set_ylabel("Density")
+	ax.set_xlabel("Probability")
+	ax.legend()
+	pdf.savefig()
+	fig.clear()
+	plt.close(fig)
+
+	pdf.close()
+
+if saveData:
+	fout = h5py.File(args.output, 'w')
+	fout.create_dataset('probability', data=np.array(probability))
+	fout.create_dataset('significance', data=np.array(significance))
+	fout.create_dataset("jet_acc", data=np.array(jet_acc))
+	fout.close()
