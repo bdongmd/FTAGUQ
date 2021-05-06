@@ -3,6 +3,7 @@ import numpy as np
 from numpy.lib.recfunctions import repack_fields
 import pandas as pd
 import json
+import plot_library
 from keras.utils import np_utils
 import sys
 import argparse
@@ -69,10 +70,12 @@ Njets = args.njets
 ttbar_files = args.input_file
 
 df_tt_u = h5py.File(ttbar_files.format("u"), "r")['jets'][:Njets]
+plot_library.variable_plotting(df_tt_u, outputFile = "output/input-before-scaling.pdf")
 
 X_test, jpt, labels, Y_test = GetTestSample(df_tt_u)
-outfile_names = args.outfile_name
-h5f = h5py.File(outfile_names, 'w')
+plot_library.noname_variable_plotting(X_test, outputFile = "output/input-after-scaling.pdf")
+
+h5f = h5py.File(args.output_file, 'w')
 h5f.create_dataset('X_test', data=X_test, compression='gzip')
 h5f.create_dataset('Y_test', data=Y_test, compression='gzip')
 h5f.create_dataset('pt_eta', data=jpt, compression='gzip')
