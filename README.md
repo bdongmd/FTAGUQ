@@ -13,6 +13,7 @@ submodule `DL1_model` is used to convert DL1 structure from ROOT file to pf form
 * [Setup](#setup)
 * [GPU Resources](#gpu-resources)
 * [Sample Production](#sample-production)
+* [Samples](#samples)
 * [Usage](#usage)
 
 ## Setup
@@ -38,5 +39,9 @@ singularity exec --contain docker://gitlab-registry.cern.ch/atlas-flavor-tagging
 
 ## Sample Production
 Testing sample production procesure is documented [makeTestSample/README.md](https://github.com/bdongmd/FTAGUQ/blob/main/makeTestSample/README.md)
+
+## Samples
+Samples directly converted from FTAG1 p3703 410470 ttbar samples are stored:` /eos/user/b/bdong/DUQ/p3703ttbar/user.bdong.410470.btagTraining.e6337_s3126_r10201_p3703.EMTopo.combined.h5`  
+Note that c jets fraction was set as 0.08.
 
 ## Usage
