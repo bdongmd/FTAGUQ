@@ -5,7 +5,7 @@ import sys
 sys.path.append('DL1_model/')
 from models.maxout_layers import Maxout1D
 
-def private_DL1Model(InputShape, h_layers, activations, lr=0.01, drops=None, dropout,  batch_size=3000):
+def NN_model(InputShape, h_layers, activations, lr=0.01, drops=None, dropout,  batch_size=3000):
 	In = keras.layers.Input(shape=[InputShape,])
 	x = In
 	for i, unit in enumerate(h_layers[:]):

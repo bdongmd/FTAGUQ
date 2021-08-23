@@ -41,7 +41,7 @@ drops=[0.1, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]
 dropout=True
 batch_size = args.batch_size
 
-DL1model, batch_size = model.private_DL1Model(InputShape=InputShape, h_layers=h_layers, lr=lr, drops=drops, dropout=dropout, batch_size=batch_size)
+DL1model, batch_size = model.NN_model(InputShape=InputShape, h_layers=h_layers, lr=lr, drops=drops, dropout=dropout, batch_size=batch_size)
 DL1model.summary()
 
 callbacks = [

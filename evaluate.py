@@ -68,7 +68,7 @@ else:
 	h_layers=[72, 57, 60, 48, 36, 24, 12, 6]
 	lr = 0.005
 	drops=[0.1, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]
-	test_model, _ = model.private_DL1Model(InputShape=InputShape, h_layers=h_layers, lr=lr, drops=drops,dropout=False)
+	test_model, _ = model.NN_model(InputShape=InputShape, h_layers=h_layers, lr=lr, drops=drops,dropout=False)
 	test_model_Dropout, _ = model.private_DL1Model(InputShape=InputShape, h_layers=h_layers, lr=lr, drops=drops,dropout=True)
 	test_model.load_weights('models/DL1_hybrid_2M_b3000_e1.h5')
 	test_model_Dropout.load_weights('models/DL1_hybrid_2M_b3000_e1.h5')
