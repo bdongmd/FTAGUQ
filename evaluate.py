@@ -48,13 +48,13 @@ selectTaggedJets = False
 
 DL1_cut = 0.46 # DL1 cut to each WP
 if(args.WP == 85):
-	DL1_cut = 0.46
+	DL1_cut = 0.665 #0.46
 elif(args.WP == 77):
-	DL1_cut = 1.45
+	DL1_cut = 2.195 #1.45
 elif(args.WP == 70):
-	DL1_cut = 2.02
+	DL1_cut = 3.245 #2.02
 elif(args.WP == 60):
-	DL1_cut = 2.74
+	DL1_cut = 4.565 #2.74
 else:
 	print('Available WP: 60, 70, 77, 85. Please choose one WP among them.')
 	print('for more details, check https://twiki.cern.ch/twiki/bin/view/AtlasProtected/BTaggingBenchmarksRelease21#DL1_tagger')
