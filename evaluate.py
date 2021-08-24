@@ -66,12 +66,11 @@ if publicDL1:
 elif UmamiTrain:
 	lr = 0.005
 	batch_size = 15000
-	activations = ["relu", "relu", "relu", "relu", "relu", "relu", "relu", "relu"]
 	units = [256, 128, 60, 48, 36, 24, 12, 6]
 	dropout_rate = [0.1, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]
 	InputShape = 44
-	test_model, _ = model.NN_model(InputShape=InputShape, h_layers=units, activations=activations, lr=lr, drops=dropout_rate, dropout=False, batch_size=batch_size)
-	test_model_Dropout, _ = model.NN_model(InputShape=InputShape, h_layers=units, activations=activations, lr=lr, drops=dropout_rate, dropout=True, batch_size=batch_size)
+	test_model, _ = model.NN_model(InputShape=InputShape, h_layers=units, lr=lr, drops=dropout_rate, dropout=False, batch_size=batch_size)
+	test_model_Dropout, _ = model.NN_model(InputShape=InputShape, h_layers=units, lr=lr, drops=dropout_rate, dropout=True, batch_size=batch_size)
 else:
 	InputShape = 44
 	h_layers=[72, 57, 60, 48, 36, 24, 12, 6]
@@ -87,6 +86,7 @@ print('loading dataset: ', args.input_file)
 
 X_test = f['X_test'][args.nStart:args.nEnd]
 labels = f['labels'][args.nStart:args.nEnd]
+pt = f['pt'][args.nStart:args.nEnd]
 
 ## selecte light jets, in future can selecte this at file preparation stage
 select_jets_X = np.array(list(compress(X_test, labels==args.label)))
@@ -119,6 +119,7 @@ verbose = 0
 
 ## evaluate b-tagged jets with dropout enabled
 significance = []
+significance_median = []
 DL1_std = []
 DL1_score = []
 jet_acc = []
@@ -127,7 +128,7 @@ lbound = 0.158655524
 ubound = 0.841344746
 
 init = timeit.default_timer()
-print('{}  Progress -- evaluating b-tagged jets with dropout enabled'.format(datetime.now().strftime(%H:%M:%S)))
+print('{}  Progress -- evaluating b-tagged jets with dropout enabled'.format(datetime.now().strftime("%H:%M:%S")))
 
 for j in range(int(btagged_X.size / InputShape)):
 	if j%1000 == 0:
@@ -164,10 +165,11 @@ if saveData:
 	fout = h5py.File(args.output, 'w')
 	fout.create_dataset('probability', data=np.array(probability))
 	fout.create_dataset('significance', data=np.array(significance))
-	four.create_dataset('significance_median', data=np.array(significance_median))
+	fout.create_dataset('significance_median', data=np.array(significance_median))
 	fout.create_dataset('jet_acc',  data=np.array(jet_acc))
-	fout.create_dataset('DL1_score', data=np.array(L1_score))
+	fout.create_dataset('DL1_score', data=np.array(DL1_score))
 	fout.create_dataset('DL1_score_noDropout', data=np.array(btagged_DL1))
+	fout.create_dataset('pt', data=np.array(pt))
 	fout.close()
 
 if doPlotting:
