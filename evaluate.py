@@ -31,13 +31,19 @@ parser.add_argument('-w', '--WP', type=int,
 parser.add_argument('-l', '--label', type=int,
 		default=0,
 		help='choose the flavour of jets want to be processed')
-
+parser.add_argument('--nStart', type=int,
+		default=0,
+		help='started jets')
+parser.add_argument('--nEnd', type=int,
+		default=10000,
+		help='ended jets')
 args = parser.parse_args()
 
 n_predictions = 10000 
-fc = 0.08 #0.18 # c-jet fraction
+fc = 0.18 #0.08 
 
-publicDL1 = True
+publicDL1 = False
+UmamiTrain = True
 
 DL1_cut = 0.46 # DL1 cut to each WP
 if(args.WP == 85):
@@ -53,16 +59,19 @@ else:
 	print('for more details, check https://twiki.cern.ch/twiki/bin/view/AtlasProtected/BTaggingBenchmarksRelease21#DL1_tagger')
 	sys.exit()
 
-try:
-	f = h5py.File(args.input_file, 'r')
-	print('loading dataset: ', args.input_file)
-except FileNotFoundError:
-	print('Oooops! No such file!')
-
 if publicDL1:
 	test_model = tf.keras.models.load_model('DL1_model/DL1_AntiKt4EMTopo')
 	test_model_Dropout = tf.keras.models.load_model('DL1_model/DL1_AntiKt4EMTopo_dropout')
 	test_model_Dropout.summary()
+elif UmamiTrain:
+	lr = 0.005
+	batch_size = 15000
+	activations = ["relu", "relu", "relu", "relu", "relu", "relu", "relu", "relu"]
+	units = [256, 128, 60, 48, 36, 24, 12, 6]
+	dropout_rate = [0.1, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]
+	InputShape = 44
+	test_model, _ = model.NN_model(InputShape=InputShape, h_layers=units, activations=activations, lr=lr, drops=dropout_rate, dropout=False, batch_size=batch_size)
+	test_model_Dropout, _ = model.NN_model(InputShape=InputShape, h_layers=units, activations=activations, lr=lr, drops=dropout_rate, dropout=True, batch_size=batch_size)
 else:
 	InputShape = 44
 	h_layers=[72, 57, 60, 48, 36, 24, 12, 6]
@@ -73,12 +82,14 @@ else:
 	test_model.load_weights('models/DL1_hybrid_2M_b3000_e1.h5')
 	test_model_Dropout.load_weights('models/DL1_hybrid_2M_b3000_e1.h5')
 
-X_test = f['X_test'][:]
-labels = f['labels'][:]
+f = h5py.File(args.input_file, 'r')
+print('loading dataset: ', args.input_file)
+
+X_test = f['X_test'][args.nStart:args.nEnd]
+labels = f['labels'][args.nStart:args.nEnd]
 
 ## selecte light jets, in future can selecte this at file preparation stage
 select_jets_X = np.array(list(compress(X_test, labels==args.label)))
-select_jets_label = np.array(list(compress(labels, labels==args.label)))
 print('Progress -- jets selected')
 
 ## evaluation with dropout disabled
@@ -93,8 +104,8 @@ btagged_X = np.array(list(compress(select_jets_X, nodropout_DL1>DL1_cut)))
 btagged_DL1 = np.array(list(compress(nodropout_DL1, nodropout_DL1>DL1_cut)))
 print('Progress -- evaluted jets with dropout disabled')
 
-print('total processed jets: {}'.format(select_jets_X.size / 41.))
-print('{} jets tagged as b-jets'.format(btagged_X.size / 41.))
+print('total processed jets: {}'.format(select_jets_X.size / InputShape))
+print('{} jets tagged as b-jets'.format(btagged_X.size / InputShape))
 if (args.label==5):
 	print('b-tagging efficiency: {} %'.format(btagged_X.size / select_jets_X.size * 100))
 else:
@@ -109,6 +120,7 @@ verbose = 0
 ## evaluate b-tagged jets with dropout enabled
 significance = []
 DL1_std = []
+DL1_score = []
 jet_acc = []
 
 lbound = 0.158655524
@@ -116,8 +128,11 @@ ubound = 0.841344746
 
 init = timeit.default_timer()
 print('{}  Progress -- evaluating b-tagged jets with dropout enabled'.format(datetime.now().strftime(%H:%M:%S)))
-print('Estimated time to evaluate {} jets: {}'.format(btagged_X.size / 41, btagged_X.size / 41 * 0.82))
-for j in range(int(btagged_X.size / 41)):
+
+for j in range(int(btagged_X.size / InputShape)):
+	if j%1000 == 0:
+		print('{} Progress -- evaltued {} / {} jets with Dropout enabled.'.format(datetime.now().strftime("%H:%M:%S"), j, int(btagged_X.size / InputShape)))
+
 	test_data =  np.vstack([btagged_X[j]] * n_predictions)
 	dropout = test_model_Dropout.predict(test_data, verbose = verbose)
 	
@@ -125,6 +140,7 @@ for j in range(int(btagged_X.size / 41)):
 
 	CI = np.quantile(dropout_DL1, [lbound, ubound], axis=0)
 	DL1mean = np.mean(dropout_DL1)
+	DL1median = np.median(dropout_DL1)
 	jet_acc.append(np.array(dropout_DL1)[np.array(dropout_DL1) > DL1_cut].size / n_predictions)
 	if DL1_cut < DL1mean :
 		significance.append((DL1mean - DL1_cut) / np.sqrt((DL1mean - CI[0])**2))
@@ -133,10 +149,26 @@ for j in range(int(btagged_X.size / 41)):
 		significance.append((DL1mean - DL1_cut) / np.sqrt((DL1mean - CI[1])**2))
 		DL1_std.append((DL1mean-CI[1])**2)
 
-	probability = stats.norm.cdf(significance)
+	if DL1_cut < DL1median:
+		significance_median.append((DL1median - DL1_cut) / np.sqrt((DL1median - CI[0])**2))
+	else:
+		significance_median.append((DL1median - DL1_cut) / np.sqrt((DL1median - CI[1])**2))
+	DL1_score.append(dropout_DL1.tolist())
+
+probability = stats.norm.cdf(significance)
 
 final = timeit.default_timer()
 print('Time used to evalute jets: {}s'.format(final-init))
+
+if saveData:
+	fout = h5py.File(args.output, 'w')
+	fout.create_dataset('probability', data=np.array(probability))
+	fout.create_dataset('significance', data=np.array(significance))
+	four.create_dataset('significance_median', data=np.array(significance_median))
+	fout.create_dataset('jet_acc',  data=np.array(jet_acc))
+	fout.create_dataset('DL1_score', data=np.array(L1_score))
+	fout.create_dataset('DL1_score_noDropout', data=np.array(btagged_DL1))
+	fout.close()
 
 if doPlotting:
 	print("{}  Progress -- plotting.".format(datetime.now().strftime("%H:%M:%s")))
@@ -172,9 +204,3 @@ if doPlotting:
 
 	pdf.close()
 
-if saveData:
-	fout = h5py.File(args.output, 'w')
-	fout.create_dataset('probability', data=np.array(probability))
-	fout.create_dataset('significance', data=np.array(significance))
-	fout.create_dataset("jet_acc", data=np.array(jet_acc))
-	fout.close()
