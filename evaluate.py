@@ -40,10 +40,11 @@ parser.add_argument('--nEnd', type=int,
 args = parser.parse_args()
 
 n_predictions = 10000 
-fc = 0.18 #0.08 
+fc = 0.08 
 
 publicDL1 = False
 UmamiTrain = True
+selectTaggedJets = False
 
 DL1_cut = 0.46 # DL1 cut to each WP
 if(args.WP == 85):
@@ -64,6 +65,7 @@ if publicDL1:
 	test_model_Dropout = tf.keras.models.load_model('DL1_model/DL1_AntiKt4EMTopo_dropout')
 	test_model_Dropout.summary()
 elif UmamiTrain:
+	fc = 0.18
 	lr = 0.005
 	batch_size = 15000
 	units = [256, 128, 60, 48, 36, 24, 12, 6]
@@ -86,7 +88,6 @@ print('loading dataset: ', args.input_file)
 
 X_test = f['X_test'][args.nStart:args.nEnd]
 labels = f['labels'][args.nStart:args.nEnd]
-pt = f['pt'][args.nStart:args.nEnd]
 
 ## selecte light jets, in future can selecte this at file preparation stage
 select_jets_X = np.array(list(compress(X_test, labels==args.label)))
@@ -100,8 +101,12 @@ nodropout_c = nodropout[:,2]
 nodropout_DL1 = np.log(nodropout_b/(fc*nodropout_c+(1-fc)*nodropout_l))
 
 ## get mis-tagged light jets
-btagged_X = np.array(list(compress(select_jets_X, nodropout_DL1>DL1_cut)))
-btagged_DL1 = np.array(list(compress(nodropout_DL1, nodropout_DL1>DL1_cut)))
+if selectTaggedJets:
+	btagged_X = np.array(list(compress(select_jets_X, nodropout_DL1>DL1_cut)))
+	btagged_DL1 = np.array(list(compress(nodropout_DL1, nodropout_DL1>DL1_cut)))
+else:
+	btagged_X = select_jets_X
+	btagged_DL1 = nodropout_DL1
 print('Progress -- evaluted jets with dropout disabled')
 
 print('total processed jets: {}'.format(select_jets_X.size / InputShape))
@@ -157,6 +162,7 @@ for j in range(int(btagged_X.size / InputShape)):
 	DL1_score.append(dropout_DL1.tolist())
 
 probability = stats.norm.cdf(significance)
+probability_median = stats.norm.cdf(significance_median)
 
 final = timeit.default_timer()
 print('Time used to evalute jets: {}s'.format(final-init))
@@ -164,12 +170,13 @@ print('Time used to evalute jets: {}s'.format(final-init))
 if saveData:
 	fout = h5py.File(args.output, 'w')
 	fout.create_dataset('probability', data=np.array(probability))
+	fout.create_dataset('probability_median', data=np.array(probability_median))
 	fout.create_dataset('significance', data=np.array(significance))
 	fout.create_dataset('significance_median', data=np.array(significance_median))
 	fout.create_dataset('jet_acc',  data=np.array(jet_acc))
 	fout.create_dataset('DL1_score', data=np.array(DL1_score))
 	fout.create_dataset('DL1_score_noDropout', data=np.array(btagged_DL1))
-	fout.create_dataset('pt', data=np.array(pt))
+	fout.create_dataset('scaled_pt', data=np.array(btagged_X[:,1]))
 	fout.close()
 
 if doPlotting:
