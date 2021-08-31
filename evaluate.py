@@ -4,8 +4,6 @@ import model
 import tensorflow as tf
 from itertools import compress
 from scipy import stats
-import matplotlib.pyplot as plt
-import matplotlib.backends.backend_pdf
 
 import os
 import sys
@@ -44,7 +42,7 @@ fc = 0.08
 
 publicDL1 = False
 UmamiTrain = True
-selectTaggedJets = False
+selectTaggedJets = True
 
 DL1_cut = 0.46 # DL1 cut to each WP
 if(args.WP == 85):
@@ -118,7 +116,6 @@ else:
 
 
 saveData = True
-doPlotting = True
 bins = 200
 verbose = 0
 
@@ -178,38 +175,4 @@ if saveData:
 	fout.create_dataset('DL1_score_noDropout', data=np.array(btagged_DL1))
 	fout.create_dataset('scaled_pt', data=np.array(btagged_X[:,1]))
 	fout.close()
-
-if doPlotting:
-	print("{}  Progress -- plotting.".format(datetime.now().strftime("%H:%M:%s")))
-	pdf = matplotlib.backends.backend_pdf.PdfPages("output/results.pdf")
-
-	fig, ax = plt.subplots(figsize=(10,10), ncols=1, nrows=1)
-	ax.plot(significance, probability, 'o')
-	ax.set_ylabel("Classification Probability")
-	ax.set_xlabel("Classification Significance")
-	pdf.savefig()
-	fig.clear()
-	plt.close(fig)
-
-	fig, ax = plt.subplots(figsize=(10,10), ncols=1, nrows=1)
-	ax.hist(np.array(significance), bins=bins, range=[-5,5], density=True, label="Dropout Calculated", alpha=0.7)
-	ax.hist(stats.norm.ppf(jet_acc), bins=bins, range=[-5,5], density=True, label="Dropout Observed", alpha=0.7)
-	ax.set_ylabel("Density")
-	ax.set_xlabel("Significance")
-	ax.legend()
-	pdf.savefig()
-	fig.clear()
-	plt.close(fig)
-
-	fig, ax = plt.subplots(figsize=(10,10), ncols=1, nrows=1)
-	ax.hist(np.array(probability), bins=bins, range=[0,1], density=True, label="Dropout Calculated", alpha=0.7)
-	ax.hist(np.array(jet_acc), bins=bins, range=[0,1], density=True, label="Dropout Observed", alpha=0.7)
-	ax.set_ylabel("Density")
-	ax.set_xlabel("Probability")
-	ax.legend()
-	pdf.savefig()
-	fig.clear()
-	plt.close(fig)
-
-	pdf.close()
 
