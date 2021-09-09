@@ -9,9 +9,6 @@ import os
 import sys
 import timeit
 from datetime import datetime
-
-from keras.models import load_model
-from keras.utils import np_utils
 import argparse
 
 parser = argparse.ArgumentParser(
@@ -63,14 +60,16 @@ if publicDL1:
 	test_model_Dropout = tf.keras.models.load_model('DL1_model/DL1_AntiKt4EMTopo_dropout')
 	test_model_Dropout.summary()
 elif UmamiTrain:
-	fc = 0.18
+	fc = 0.018
 	lr = 0.005
 	batch_size = 15000
 	units = [256, 128, 60, 48, 36, 24, 12, 6]
 	dropout_rate = [0.1, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]
 	InputShape = 44
-	test_model, _ = model.NN_model(InputShape=InputShape, h_layers=units, lr=lr, drops=dropout_rate, dropout=False, batch_size=batch_size)
-	test_model_Dropout, _ = model.NN_model(InputShape=InputShape, h_layers=units, lr=lr, drops=dropout_rate, dropout=True, batch_size=batch_size)
+	test_model = model.NN_model(InputShape=InputShape, h_layers=units, lr=lr, drops=dropout_rate, dropout=False)
+	test_model_Dropout = model.NN_model(InputShape=InputShape, h_layers=units, lr=lr, drops=dropout_rate, dropout=True)
+	test_model.load_weights('/eos/user/b/bdong/DUQ/UmamiTrain/DL1r-PFlow_new-taggers-stats-22M/model_epoch149.h5')
+	test_model_Dropout.load_weights('/eos/user/b/bdong/DUQ/UmamiTrain/DL1r-PFlow_new-taggers-stats-22M/model_epoch149.h5')
 else:
 	InputShape = 44
 	h_layers=[72, 57, 60, 48, 36, 24, 12, 6]
@@ -97,6 +96,7 @@ nodropout_l = nodropout[:,0]
 nodropout_b = nodropout[:,1]
 nodropout_c = nodropout[:,2]
 nodropout_DL1 = np.log(nodropout_b/(fc*nodropout_c+(1-fc)*nodropout_l))
+print(nodropout_DL1)
 
 ## get mis-tagged light jets
 if selectTaggedJets:
@@ -109,14 +109,13 @@ print('Progress -- evaluted jets with dropout disabled')
 
 print('total processed jets: {}'.format(select_jets_X.size / InputShape))
 print('{} jets tagged as b-jets'.format(btagged_X.size / InputShape))
-if (args.label==5):
+if (args.label==2):
 	print('b-tagging efficiency: {} %'.format(btagged_X.size / select_jets_X.size * 100))
 else:
 	print('mis-tag rate: {} %'.format(btagged_X.size / select_jets_X.size * 100))
 
 
 saveData = True
-bins = 200
 verbose = 0
 
 ## evaluate b-tagged jets with dropout enabled

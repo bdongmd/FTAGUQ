@@ -5,7 +5,7 @@ import sys
 sys.path.append('DL1_model/')
 from models.maxout_layers import Maxout1D
 
-def NN_model(InputShape, h_layers, lr, drops, dropout,  batch_size):
+def NN_model(InputShape, h_layers, lr, drops, dropout):
 	In = keras.layers.Input(shape=[InputShape,])
 	x = In
 	for i, unit in enumerate(h_layers[:]):
@@ -25,5 +25,5 @@ def NN_model(InputShape, h_layers, lr, drops, dropout,  batch_size):
 			optimizer=model_optimizer,
 			metrics=['accuracy'])
 
-	return model, batch_size
+	return model
 
