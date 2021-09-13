@@ -37,6 +37,9 @@ args = parser.parse_args()
 n_predictions = 10000 
 fc = 0.08 
 
+saveData = True
+verbose = 0
+
 publicDL1 = False
 UmamiTrain = True
 selectTaggedJets = True
@@ -55,6 +58,7 @@ else:
 	print('for more details, check https://twiki.cern.ch/twiki/bin/view/AtlasProtected/BTaggingBenchmarksRelease21#DL1_tagger')
 	sys.exit()
 
+## select correct training model
 if publicDL1:
 	test_model = tf.keras.models.load_model('DL1_model/DL1_AntiKt4EMTopo')
 	test_model_Dropout = tf.keras.models.load_model('DL1_model/DL1_AntiKt4EMTopo_dropout')
@@ -86,17 +90,16 @@ print('loading dataset: ', args.input_file)
 X_test = f['X_test'][args.nStart:args.nEnd]
 labels = f['labels'][args.nStart:args.nEnd]
 
-## selecte light jets, in future can selecte this at file preparation stage
+## label 0 for light jets, 1 for c-jets, 2 for b-jets
 select_jets_X = np.array(list(compress(X_test, labels==args.label)))
 print('Progress -- jets selected')
 
 ## evaluation with dropout disabled
 nodropout = test_model.predict(select_jets_X)
 nodropout_l = nodropout[:,0]
-nodropout_b = nodropout[:,1]
-nodropout_c = nodropout[:,2]
+nodropout_c = nodropout[:,1]
+nodropout_b = nodropout[:,2]
 nodropout_DL1 = np.log(nodropout_b/(fc*nodropout_c+(1-fc)*nodropout_l))
-print(nodropout_DL1)
 
 ## get mis-tagged light jets
 if selectTaggedJets:
@@ -114,17 +117,13 @@ if (args.label==2):
 else:
 	print('mis-tag rate: {} %'.format(btagged_X.size / select_jets_X.size * 100))
 
-
-saveData = True
-verbose = 0
-
 ## evaluate b-tagged jets with dropout enabled
-significance = []
+significance_mean = []
 significance_median = []
-DL1_std = []
 DL1_score = []
 jet_acc = []
 
+## 68% CI
 lbound = 0.158655524
 ubound = 0.841344746
 
@@ -145,11 +144,9 @@ for j in range(int(btagged_X.size / InputShape)):
 	DL1median = np.median(dropout_DL1)
 	jet_acc.append(np.array(dropout_DL1)[np.array(dropout_DL1) > DL1_cut].size / n_predictions)
 	if DL1_cut < DL1mean :
-		significance.append((DL1mean - DL1_cut) / np.sqrt((DL1mean - CI[0])**2))
-		DL1_std.append((DL1mean-CI[0])**2)
+		significance_mean.append((DL1mean - DL1_cut) / np.sqrt((DL1mean - CI[0])**2))
 	else:
 		significance.append((DL1mean - DL1_cut) / np.sqrt((DL1mean - CI[1])**2))
-		DL1_std.append((DL1mean-CI[1])**2)
 
 	if DL1_cut < DL1median:
 		significance_median.append((DL1median - DL1_cut) / np.sqrt((DL1median - CI[0])**2))
@@ -157,7 +154,7 @@ for j in range(int(btagged_X.size / InputShape)):
 		significance_median.append((DL1median - DL1_cut) / np.sqrt((DL1median - CI[1])**2))
 	DL1_score.append(dropout_DL1.tolist())
 
-probability = stats.norm.cdf(significance)
+probability_mean = stats.norm.cdf(significance_mean)
 probability_median = stats.norm.cdf(significance_median)
 
 final = timeit.default_timer()
@@ -165,11 +162,11 @@ print('Time used to evalute jets: {}s'.format(final-init))
 
 if saveData:
 	fout = h5py.File(args.output, 'w')
-	fout.create_dataset('probability', data=np.array(probability))
+	fout.create_dataset('probability_mean', data=np.array(probability_mean))
 	fout.create_dataset('probability_median', data=np.array(probability_median))
-	fout.create_dataset('significance', data=np.array(significance))
+	fout.create_dataset('significance_mean', data=np.array(significance_mean))
 	fout.create_dataset('significance_median', data=np.array(significance_median))
-	fout.create_dataset('jet_acc',  data=np.array(jet_acc))
+	fout.create_dataset('jet_acc_Dropout',  data=np.array(jet_acc))
 	fout.create_dataset('DL1_score', data=np.array(DL1_score))
 	fout.create_dataset('DL1_score_noDropout', data=np.array(btagged_DL1))
 	fout.create_dataset('scaled_pt', data=np.array(btagged_X[:,1]))
