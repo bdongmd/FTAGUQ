@@ -1,10 +1,6 @@
 import tensorflow as tf
 import tensorflow.keras as keras
 
-import sys
-sys.path.append('DL1_model/')
-from models.maxout_layers import Maxout1D
-
 def NN_model(InputShape, h_layers, lr, drops, dropout):
 	In = keras.layers.Input(shape=[InputShape,])
 	x = In
