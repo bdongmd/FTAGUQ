@@ -14,7 +14,7 @@ def NN_model(InputShape, h_layers, lr, drops, dropout):
 
 	model = keras.models.Model(inputs=In, outputs=predictions)
 
-	model_optimizer = keras.optimizers.Adam(lr=lr)
+	model_optimizer = keras.optimizers.Adam(learning_rate=lr)
 
 	model.compile(
 			loss = 'categorical_crossentropy',
