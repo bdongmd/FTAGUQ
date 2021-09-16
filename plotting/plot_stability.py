@@ -35,6 +35,6 @@ for i in range(4):
 	ax.set_xlabel("# of evaluation times")
 	ax.set_ylabel("DL1 mean/median value")
 	plt.legend()
-	plt.savefig('jet{}_acc.pdf'.format(i))
+	plt.savefig('jet{}_DL1.pdf'.format(i))
 
 
