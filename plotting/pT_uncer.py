@@ -31,8 +31,7 @@ def get_eff_hist(pT, DL1_score):
 	h_total, _bins = np.histogram(pT, bins=bins)
 	h_passed, _bins = np.histogram(pT[DL1_score>DL1_cut], bins=bins) 
 	del _bins
-	bin_eff = []
-	return h_passed/h_total
+	return  h_passed/h_total
 
 def get_eff_Dropout(pT, DL1_score):
 	hist_effs = []
@@ -40,8 +39,7 @@ def get_eff_Dropout(pT, DL1_score):
 		hist_effs.append(get_eff_hist(pT, DL1_score[:,i]))
 	return (hist_effs, np.median(hist_effs, axis=0).flatten(), np.std(hist_effs, axis=0).flatten())
 
-
-directory = "/eos/user/b/bdong/DUQ/UmamiTrain/DL1r-PFlow_new-taggers-stats-22M/tmp/"
+directory = "/eos/user/b/bdong/DUQ/UmamiTrain/DL1r-PFlow_new-taggers-stats-22M/Zprime/"
 for i in os.listdir(directory):
 	if i.endswith('.h5'):
 		with h5py.File(os.path.join(directory, i)) as f:
@@ -61,12 +59,15 @@ DL1r_bins = np.linspace(-5, 15, 50).tolist()
 
 eff_noDropout = get_eff_hist(pt, DL1_score_noDropout)
 hist_effs, eff_Dropout, eff_sys = get_eff_Dropout(pt, DL1_score)
+print("eff no Dropout = {}".format(eff_noDropout))
+print("eff Dropout = {}".format(eff_Dropout))
+print("error = {}".format(eff_sys))
 
 pdf = PdfPages("output/test.pdf")
 plot_lib.plot_DL1r_pT(pt, DL1_score_noDropout, bins, DL1r_bins, pdf)
 pT_bins = []
 for i in range(len(bins)-1):
-	plot_lib.plot_1d_eff(hist_effs[:,i], '[{}, {}] GeV'.format(bins[i], bins[i+1]), pdf)
-	pT_bins.append((bins[i], bins[i+1])/2.)
+	plot_lib.plot_1d_eff(np.array(hist_effs)[:,i], '[{}, {}] GeV'.format(bins[i], bins[i+1]), pdf)
+	pT_bins.append((bins[i]+bins[i+1])/2.)
 plot_lib.plot_eff_pT_1d(pT_bins, eff_noDropout, eff_Dropout, eff_sys, pdf)
 pdf.close()

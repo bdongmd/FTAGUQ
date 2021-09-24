@@ -38,15 +38,15 @@ def plot_eff_pT_2d(pT, eff, pT_bins, eff_bins, pdf):
 	fig.clear()
 	plt.close(fig)
 
-def plot_eff_pT_1d(pT, eff_noDropout, eff_Dropout, pdf):
+def plot_eff_pT_1d(pT_bins, eff_noDropout, eff_Dropout, eff_sys, pdf):
 	fig, (ax0, ax1) = plt.subplots(1,2, figsize=(12,5), sharey=False)
 	ax0.plot(pT_bins, eff_noDropout, '-', color='black', label = "w/o dropout")
-	ax0.plot(pT_bins, eff_Dropout, '-', color="yellow", alpha=0.8, label = "w/ dropout")
-	ax0.fill_between(pT_bins, eff_Dropout - eff_sys, eff_Dropout + eff_sys, color="yellow", alpha=0.6, label = "systematic")
-	plot_style(r"jet $p_{T}$ [GeV]", "b-tagging efficiency")
+	ax0.plot(pT_bins, eff_Dropout, '-', color="blue", alpha=0.8, label = "w/ dropout")
+	ax0.fill_between(pT_bins, eff_Dropout - eff_sys, eff_Dropout + eff_sys, color="blue", alpha=0.6, label = "systematic")
+	ax0.set_xlabel(r"jet $p_{T}$ [GeV]")
+	ax0.set_ylabel("b-tagging efficiency")
 	ax0.legend(loc = "upper right")
-	ax1.plot(pT_bins, eff_sys/eff_Dropout, 'o', color='black', label="relative uncertainty")
-	ax1.legend(loc="upper right")
+	ax1.plot(pT_bins, eff_sys/eff_Dropout, 'o', color='black')
 	plot_style(r"jet $p_{T}$ [GeV]", "rel. uncertainty")
 	pdf.savefig()
 	fig.clear()
@@ -56,10 +56,9 @@ def plot_eff_pT_1d(pT, eff_noDropout, eff_Dropout, pdf):
 def plot_1d_eff(eff, label, pdf):
 	fig = plt.figure()
 	ax = fig.add_axes([0.15, 0.1, 0.8, 0.8])
-	plt.hist(eff, bins=50, density=True, alpha=0.7)
-	plt.text(0.1, 0.9, label, horizontalalignment='center', verticalalignment='center', transform = ax.transAxes)
+	plt.hist(eff, bins=20, density=True, alpha=0.7)
+	plt.text(0.2, 0.9, label, horizontalalignment='center', verticalalignment='center', transform = ax.transAxes)
 	plot_style("b-tagging efficiency", "density")
-	ax.legend()
 	pdf.savefig()
 	fig.clear
 	plt.close(fig)
