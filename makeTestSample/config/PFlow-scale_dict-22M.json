@@ -1,0 +1,269 @@
+{
+    "jets": [
+        {
+            "name": "absEta_btagJes",
+            "shift": 0.9175359837316751,
+            "scale": 0.6328336259003324,
+            "default": 0.9175359837316751
+        },
+        {
+            "name": "pt_btagJes",
+            "shift": 602457.2480418527,
+            "scale": 1031525.5408820781,
+            "default": 602457.2480418527
+        },
+        {
+            "name": "JetFitter_isDefaults",
+            "shift": 0.0,
+            "scale": 1.0,
+            "default": null
+        },
+        {
+            "name": "JetFitter_mass",
+            "shift": 2628.190612417305,
+            "scale": 1981.988987042889,
+            "default": 2628.19057951211
+        },
+        {
+            "name": "JetFitter_energyFraction",
+            "shift": 0.30424903283158833,
+            "scale": 0.3387308509098833,
+            "default": 0
+        },
+        {
+            "name": "JetFitter_significance3d",
+            "shift": 10.161143754973587,
+            "scale": 16.259320431891297,
+            "default": 0
+        },
+        {
+            "name": "JetFitter_nVTX",
+            "shift": 0.1748936148800683,
+            "scale": 0.9951954745561481,
+            "default": -1
+        },
+        {
+            "name": "JetFitter_nSingleTracks",
+            "shift": 0.1902805425548137,
+            "scale": 1.1964042618458561,
+            "default": -1
+        },
+        {
+            "name": "JetFitter_nTracksAtVtx",
+            "shift": 1.0228517709777936,
+            "scale": 2.0726537806212866,
+            "default": -1
+        },
+        {
+            "name": "JetFitter_N2Tpair",
+            "shift": 2.861576939123274,
+            "scale": 7.358081803047641,
+            "default": -1
+        },
+        {
+            "name": "JetFitter_deltaR",
+            "shift": 0.0588631440966058,
+            "scale": 0.05094936342578671,
+            "default": 0.0588631439512229
+        },
+        {
+            "name": "JetFitterSecondaryVertex_isDefaults",
+            "shift": 0.0,
+            "scale": 1.0,
+            "default": null
+        },
+        {
+            "name": "JetFitterSecondaryVertex_nTracks",
+            "shift": 1.2275340945412636,
+            "scale": 1.2716209525399815,
+            "default": 0
+        },
+        {
+            "name": "JetFitterSecondaryVertex_mass",
+            "shift": 687.8701357502498,
+            "scale": 642.4214529415376,
+            "default": 687.8701456965573
+        },
+        {
+            "name": "JetFitterSecondaryVertex_energy",
+            "shift": 110741.96908352303,
+            "scale": 803380.5002967337,
+            "default": 110741.96926223159
+        },
+        {
+            "name": "JetFitterSecondaryVertex_energyFraction",
+            "shift": 0.15184354757264285,
+            "scale": 0.2146379550129551,
+            "default": 0
+        },
+        {
+            "name": "JetFitterSecondaryVertex_displacement3d",
+            "shift": 22.705053298370785,
+            "scale": 36.70267815106662,
+            "default": 22.705053281708388
+        },
+        {
+            "name": "JetFitterSecondaryVertex_displacement2d",
+            "shift": 12.898890463173137,
+            "scale": 18.656807429878818,
+            "default": 12.898890445958742
+        },
+        {
+            "name": "JetFitterSecondaryVertex_maximumTrackRelativeEta",
+            "shift": 4.317931087085626,
+            "scale": 1.0420027346814007,
+            "default": 4.317931039855
+        },
+        {
+            "name": "JetFitterSecondaryVertex_minimumTrackRelativeEta",
+            "shift": 3.788809009155429,
+            "scale": 0.9372127605395463,
+            "default": 3.7888089813490153
+        },
+        {
+            "name": "JetFitterSecondaryVertex_averageTrackRelativeEta",
+            "shift": 4.051365382882961,
+            "scale": 0.9459841051039947,
+            "default": 4.051365386828833
+        },
+        {
+            "name": "maximumTrackRelativeEta",
+            "shift": 5.193118046749378,
+            "scale": 1.2253800841687776,
+            "default": 5.1931180467461315
+        },
+        {
+            "name": "minimumTrackRelativeEta",
+            "shift": 2.337636596876995,
+            "scale": 0.5231746218610168,
+            "default": 2.337636596869499
+        },
+        {
+            "name": "averageTrackRelativeEta",
+            "shift": 3.3726872594123627,
+            "scale": 0.70498545011971,
+            "default": 3.3726872594069994
+        },
+        {
+            "name": "SV1_isDefaults",
+            "shift": 0.0,
+            "scale": 1.0,
+            "default": null
+        },
+        {
+            "name": "SV1_NGTinSvx",
+            "shift": 0.7772150868550194,
+            "scale": 2.588945324234344,
+            "default": -1
+        },
+        {
+            "name": "SV1_masssvx",
+            "shift": 2006.3574419674067,
+            "scale": 753.3345723953369,
+            "default": 2006.35747741837
+        },
+        {
+            "name": "SV1_N2Tpair",
+            "shift": 0.9776273476539485,
+            "scale": 3.9129969885699296,
+            "default": -1
+        },
+        {
+            "name": "SV1_efracsvx",
+            "shift": 0.19799399493248676,
+            "scale": 0.30809631650768404,
+            "default": 0
+        },
+        {
+            "name": "SV1_deltaR",
+            "shift": 0.06241835709231305,
+            "scale": 0.10289733843753485,
+            "default": 0.06241835807066029
+        },
+        {
+            "name": "SV1_Lxy",
+            "shift": 14.75569635892989,
+            "scale": 13.929002249329221,
+            "default": 14.755696468742384
+        },
+        {
+            "name": "SV1_L3d",
+            "shift": 24.624696509490043,
+            "scale": 26.09828371432432,
+            "default": 24.624696117657642
+        },
+        {
+            "name": "SV1_significance3d",
+            "shift": 29.724489066713073,
+            "scale": 23.60787663004782,
+            "default": 29.72448881030563
+        },
+        {
+            "name": "IP2D_isDefaults",
+            "shift": 0.0,
+            "scale": 1.0,
+            "default": null
+        },
+        {
+            "name": "IP2D_bu",
+            "shift": 0.10231356039727516,
+            "scale": 5.120008866909152,
+            "default": 0.10231356035941053
+        },
+        {
+            "name": "IP2D_bc",
+            "shift": -1.1332623676226352,
+            "scale": 2.669909859874035,
+            "default": -1.133262367119673
+        },
+        {
+            "name": "IP2D_cu",
+            "shift": 1.2273582669151806,
+            "scale": 2.7504268778121865,
+            "default": 1.2273582678229338
+        },
+        {
+            "name": "IP3D_isDefaults",
+            "shift": 0.0,
+            "scale": 1.0,
+            "default": null
+        },
+        {
+            "name": "IP3D_bu",
+            "shift": 0.2893884408147641,
+            "scale": 5.755575021647629,
+            "default": 0.28938844075910386
+        },
+        {
+            "name": "IP3D_bc",
+            "shift": -1.1849651031403834,
+            "scale": 3.12588144523628,
+            "default": -1.1849651027972818
+        },
+        {
+            "name": "IP3D_cu",
+            "shift": 1.472023290949918,
+            "scale": 3.070087299069279,
+            "default": 1.4720232915021818
+        },
+        {
+            "name": "rnnip_pb",
+            "shift": 0.38813586634876596,
+            "scale": 0.3453139341627428,
+            "default": 0.38813586634876596
+        },
+        {
+            "name": "rnnip_pc",
+            "shift": 0.16496099117729376,
+            "scale": 0.11939273269223007,
+            "default": 0.16496099117729376
+        },
+        {
+            "name": "rnnip_pu",
+            "shift": 0.44690311269802535,
+            "scale": 0.3429315109587654,
+            "default": 0.44690311269802535
+        }
+    ],
+    "tracks": {}
+}

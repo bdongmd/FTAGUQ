@@ -1,0 +1,248 @@
+[
+    {
+        "default": 0,
+        "shift": -0.9856052398681641,
+        "name": "abs_eta_uncalib",
+        "scale": 1.5265974585304871
+    },
+    {
+        "default": 0,
+        "shift": -159402.65625,
+        "name": "pt_uncalib",
+        "scale": 4.1431180575664244e-06
+    },
+    {
+        "default": 2385.3203125,
+        "shift": -2365.76171875,
+        "name": "JetFitter_mass",
+        "scale": 0.0006544996209782468
+    },
+    {
+        "default": null,
+        "shift": 0.0,
+        "name": "JetFitter_isDefaults",
+        "scale": 1.0
+    },
+    {
+        "default": 0,
+        "shift": -0.2658178210258484,
+        "name": "JetFitter_energyFraction",
+        "scale": 3.002976626234906
+    },
+    {
+        "default": 16.35621452331543,
+        "shift": -16.37847900390625,
+        "name": "JetFitter_significance3d",
+        "scale": 0.07255298959616412
+    },
+    {
+        "default": 1.0,
+        "shift": -0.8778690099716187,
+        "name": "JetFitter_nVTX",
+        "scale": 2.1500704751912396
+    },
+    {
+        "default": 1.0,
+        "shift": -0.8388545513153076,
+        "name": "JetFitter_nSingleTracks",
+        "scale": 1.642264132030972
+    },
+    {
+        "default": 2.0,
+        "shift": -2.060994863510132,
+        "name": "JetFitter_nTracksAtVtx",
+        "scale": 0.729528989587746
+    },
+    {
+        "default": 0.0,
+        "shift": -2.1855709552764893,
+        "name": "JetFitter_N2Tpair",
+        "scale": 0.2209572159006441 
+    },
+    {
+        "default": 0.07263896614313126,
+        "shift": -0.07336221635341644,
+        "name": "JetFitter_deltaR",
+        "scale": 16.321739497368984 
+    },
+    {
+        "default": 2.0,
+        "shift": -2.496875762939453,
+        "name": "SV1_NGTinSvx",
+        "scale": 0.8767324872105414 
+    },
+    {
+        "default": 1826.292236328125,
+        "shift": -1825.238525390625,
+        "name": "SV1_masssvx",
+        "scale": 0.0016769531529871751
+    },
+    {
+        "default": null,
+        "shift": 0.0,
+        "name": "SV1_isDefaults",
+        "scale": 1.0
+    },
+    {
+        "default": 5.0,
+        "shift": -5.053224563598633,
+        "name": "SV1_N2Tpair",
+        "scale": 0.3144505259129987
+    },
+    {
+        "default": 0.0,
+        "shift": -0.16007450222969055,
+        "name": "SV1_efracsvx",
+        "scale": 3.6453973783983273
+    },
+    {
+        "default": 0.07414966821670532,
+        "shift": -0.07430749386548996,
+        "name": "SV1_deltaR",
+        "scale": 8.612002262180685
+    },
+    {
+        "default": 12.32469654083252,
+        "shift": -12.242676734924316,
+        "name": "SV1_Lxy",
+        "scale": 0.095300165583965
+    },
+    {
+        "default": 21.4924373626709,
+        "shift": -21.43975257873535,
+        "name": "SV1_L3d",
+        "scale": 0.04653905873021002
+    },
+    {
+        "default": 34.152305603027344,
+        "shift": -34.1101188659668,
+        "name": "SV1_significance3d",
+        "scale": 0.03562301306109653
+    },
+    {
+        "default": 0.01814463920891285,
+        "shift": -0.06603239476680756,
+        "name": "IP2D_bu",
+        "scale": 0.20739734797872458 
+    },
+    {
+        "default": null,
+        "shift": -0.0,
+        "name": "IP2D_isDefaults",
+        "scale": 1.0
+    },
+    {
+        "default": -0.9778055548667908,
+        "shift": 1.0810009241104126,
+        "name": "IP2D_bc",
+        "scale": 0.356715377664381
+    },
+    {
+        "default": 0.9875664114952087,
+        "shift": -0.8138286471366882,
+        "name": "IP2D_cu",
+        "scale": 0.30182138232953093
+    },
+    {
+        "default": 0.18468375504016876,
+        "shift": -0.23728886246681213,
+        "name": "IP3D_bu",
+        "scale": 0.18355984890889587
+    },
+    {
+        "default": null,
+        "shift": -0.0,
+        "name": "IP3D_isDefaults",
+        "scale": 1.0
+    },
+    {
+        "default": -0.9929339289665222,
+        "shift": 1.035625696182251,
+        "name": "IP3D_bc",
+        "scale": 0.3329397456870798
+    },
+    {
+        "default": 1.1738535165786743,
+        "shift": -1.062151551246643,
+        "name": "IP3D_cu",
+        "scale": 0.2952152275533387
+    },
+    {
+        "default": 2.0,
+        "shift": -1.9664427042007446,
+        "name": "secondaryVtx_nTrks",
+        "scale": 1.130730496278956
+    },
+    {
+        "default": null,
+        "shift": -0.0,
+        "name": "secondaryVtx_isDefaults",
+        "scale": 1.0
+    },
+    {
+        "default": 702.9368286132812,
+        "shift": -704.12109375,
+        "name": "secondaryVtx_m",
+        "scale": 0.001674179218923457
+    },
+    {
+        "default": 91229.2109375,
+        "shift": -89242.4453125,
+        "name": "secondaryVtx_E",
+        "scale": 8.7760846077744e-08
+    },
+    {
+        "default": 0.13528408110141754,
+        "shift": -0.13490742444992065,
+        "name": "secondaryVtx_EFrac",
+        "scale": 4.897414470218275
+    },
+    {
+        "default": 25.609987258911133,
+        "shift": -25.59065818786621,
+        "name": "secondaryVtx_L3d",
+        "scale": 0.02680987685583258
+    },
+    {
+        "default": 14.086820602416992,
+        "shift": -13.948906898498535,
+        "name": "secondaryVtx_Lxy",
+        "scale": 0.055656073051992855
+    },
+    {
+        "default": 4.312692165374756,
+        "shift": -4.304172515869141,
+        "name": "secondaryVtx_max_trk_flightDirRelEta",
+        "scale": 1.0117755113917508
+    },
+    {
+        "default": 3.761364459991455,
+        "shift": -3.7512664794921875,
+        "name": "secondaryVtx_min_trk_flightDirRelEta",
+        "scale": 1.1200768775299796
+    },
+    {
+        "default": 4.034658908843994,
+        "shift": -4.025299072265625,
+        "name": "secondaryVtx_avg_trk_flightDirRelEta",
+        "scale": 1.111882194095668
+    },
+    {
+        "default": 4.968064785003662,
+        "shift": -4.948101997375488,
+        "name": "max_trk_flightDirRelEta",
+        "scale": 0.8057307625072279
+    },
+    {
+        "default": 2.2239129543304443,
+        "shift": -2.2218708992004395,
+        "name": "min_trk_flightDirRelEta",
+        "scale": 1.7878489854511226
+    },
+    {
+        "default": 3.221343994140625,
+        "shift": -3.2101800441741943,
+        "name": "avg_trk_flightDirRelEta",
+        "scale": 1.2986671513351553
+    }
+]
