@@ -19,7 +19,7 @@ ubound = 0.841344746
 
 DL1_cut = 2.195
 
-directory = "/eos/user/b/bdong/DUQ/UmamiTrain/DL1r-PFlow_new-taggers-stats-22M/Zprime/"
+directory = "/eos/user/b/bdong/DUQ/UmamiTrain/DL1r-PFlow_new-taggers-stats-22M/500567/"
 for i in os.listdir(directory):
 	if i.endswith('.h5'):
 		with h5py.File(os.path.join(directory, i)) as f:
@@ -56,14 +56,14 @@ probability_median = stats.norm.cdf(new_significance_median)
 del new_significance_median
 
 print("Progress -- pT scaling")
-pt = pT_scale(scaled_pt) 
+pt = pT_uncer_lib.pT_scale(scaled_pt) 
 del scaled_pt
 DL1r_bins = np.linspace(-5, 15, 50).tolist()
 
 print("Progress -- calculating efficiencies")
 #### get efficiency with Dropout enabled
-eff_Dropout_DUQ, eff_Dropout, eff_sys = get_eff_Dropout(pt, DL1_score)
-eff_noDropout = get_eff_hist(pt, DL1_score_noDropout)
+hist_effs, eff_Dropout_DUQ, eff_Dropout, eff_sys = pT_uncer_lib.get_eff_Dropout(pt, DL1_score)
+eff_noDropout = pT_uncer_lib.get_eff_hist(pt, DL1_score_noDropout)
 
 #### get DL1 median value for each jet
 #DL1_median, DL1_mean = get_each_jet_median(DL1_score)
@@ -76,11 +76,11 @@ print("eff Dropout = {}".format(eff_Dropout_DUQ))
 #print("error = {}".format(eff_sys))
 
 print("Progress -- plotting")
-pdf = PdfPages("output/Zprime.pdf")
+pdf = PdfPages("output/500567.pdf")
 plot_lib.plot_DL1r_pT(pt, DL1_score_noDropout, bins, DL1r_bins, pdf)
 pT_bins = []
 for i in range(len(bins)-1):
-	#plot_lib.plot_1d_eff(np.array(hist_effs)[:,i], '[{}, {}] GeV'.format(bins[i], bins[i+1]), pdf)
+	plot_lib.plot_1d_eff(np.array(hist_effs)[:,i], '[{}, {}] GeV'.format(bins[i], bins[i+1]), pdf)
 	pT_bins.append((bins[i]+bins[i+1])/2.)
 plot_lib.plot_eff_pT_1d(pT_bins, eff_noDropout, eff_Dropout_DUQ, eff_sys, pdf)
 #plot_lib.plot_eff_pT_1d(pT_bins, eff_noDropout, eff_Dropout_predicted, eff_sys, pdf)

@@ -30,6 +30,7 @@ def get_eff_hist(pT, DL1_score, returnAll=False):
 	''' Get b-tag eff and uncertainty as a function of pT'''
 	h_total, _bins = np.histogram(pT, bins=bins)
 	h_passed, _bins = np.histogram(pT[DL1_score>DL1_cut], bins=bins) 
+	print(h_passed)
 	del _bins
 	if returnAll:
 		return(h_passed/h_total, h_passed, h_total)
@@ -45,7 +46,7 @@ def get_eff_Dropout(pT, DL1_score):
 		hist_effs.append(v_effs)
 		hist_total += np.array(v_total)
 		hist_passed += np.array(v_passed)
-	return (hist_passed/hist_total, np.median(hist_effs, axis=0).flatten(), np.std(hist_effs, axis=0).flatten())
+	return (hist_effs, hist_passed/hist_total, np.median(hist_effs, axis=0).flatten(), np.std(hist_effs, axis=0).flatten())
 
 def get_eff_Dropout_predicted(pT, probability_median):
 	hist_effs = []

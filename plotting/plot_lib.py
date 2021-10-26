@@ -58,6 +58,7 @@ def plot_1d_eff(eff, label, pdf):
 	ax = fig.add_axes([0.15, 0.1, 0.8, 0.8])
 	plt.hist(eff, bins=20, density=True, alpha=0.7)
 	plt.text(0.2, 0.9, label, horizontalalignment='center', verticalalignment='center', transform = ax.transAxes)
+	#plt.text(0.2, 0.8, "number of jets: {}".format(len(eff)), horizontalalignment='center', verticalalignment='center', transform = ax.transAxes)
 	plot_style("b-tagging efficiency", "density")
 	pdf.savefig()
 	fig.clear
