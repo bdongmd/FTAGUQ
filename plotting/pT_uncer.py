@@ -19,7 +19,7 @@ ubound = 0.841344746
 
 DL1_cut = 2.195
 
-directory = "/eos/user/b/bdong/DUQ/UmamiTrain/DL1r-PFlow_new-taggers-stats-22M/500567/"
+directory = "/eos/user/b/bdong/DUQ/UmamiTrain/DL1r-PFlow_new-taggers-stats-22M/tmp/"
 for i in os.listdir(directory):
 	if i.endswith('.h5'):
 		with h5py.File(os.path.join(directory, i)) as f:
@@ -76,7 +76,7 @@ print("eff Dropout = {}".format(eff_Dropout_DUQ))
 #print("error = {}".format(eff_sys))
 
 print("Progress -- plotting")
-pdf = PdfPages("output/500567.pdf")
+pdf = PdfPages("output/500567_8.pdf")
 plot_lib.plot_DL1r_pT(pt, DL1_score_noDropout, bins, DL1r_bins, pdf)
 pT_bins = []
 for i in range(len(bins)-1):
