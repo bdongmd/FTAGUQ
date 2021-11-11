@@ -30,7 +30,6 @@ def get_eff_hist(pT, DL1_score, returnAll=False):
 	''' Get b-tag eff and uncertainty as a function of pT'''
 	h_total, _bins = np.histogram(pT, bins=bins)
 	h_passed, _bins = np.histogram(pT[DL1_score>DL1_cut], bins=bins) 
-	print(h_passed)
 	del _bins
 	if returnAll:
 		return(h_passed/h_total, h_passed, h_total)
