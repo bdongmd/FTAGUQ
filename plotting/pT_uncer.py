@@ -42,6 +42,9 @@ print("Progress -- Done file merging ")
 
 print("Progress -- Starting to remove bad DL1r values")
 new_significance_median = []
+DL1_1std_high = []
+DL1_1std_low = []
+DL1_1std = []
 for i in tqdm (range(len(DL1_score)), desc="processing jets"):
 	## bad value: -0.63315678
 	badValueLeft = (DL1_score[i]>-0.63315679)
@@ -50,11 +53,16 @@ for i in tqdm (range(len(DL1_score)), desc="processing jets"):
 	tmp_DL1 = DL1_score[i][~badValue]
 	CI = np.quantile(tmp_DL1, [lbound, ubound], axis=0)
 	tmp_DL1median = np.median(tmp_DL1)
+	DL1_1std_low.append(CI[0])
+	DL1_1std_high.append(CI[1])
 
 	if DL1_cut < tmp_DL1median :
 		new_significance_median.append((tmp_DL1median - DL1_cut) / np.sqrt((tmp_DL1median - CI[0])**2))
+		DL1_1std.append(CI[0])
 	else:
 		new_significance_median.append((tmp_DL1median - DL1_cut) / np.sqrt((tmp_DL1median - CI[1])**2))
+		DL1_1std.append(CI[1])
+
 probability_median = stats.norm.cdf(new_significance_median)
 del new_significance_median
 print("Progress -- Done calcualting predicted score after removing vad values")
@@ -68,7 +76,12 @@ print("Progress -- Calculating efficiencies")
 #### get efficiency with Dropout enabled
 hist_effs, eff_Dropout_DUQ, eff_Dropout, eff_sys = pT_uncer_lib.get_eff_Dropout(pt, DL1_score) ## efficiency with Dropout
 eff_noDropout = pT_uncer_lib.get_eff_hist(pt, DL1_score_noDropout) ## efficiency without Dropout
+eff_Dropout_high = pT_uncer_lib.get_eff_hist(pt, np.array(DL1_1std_high)) ## high side efficiency with Dropout
+eff_Dropout_low = pT_uncer_lib.get_eff_hist(pt, np.array(DL1_1std_low)) ## low side efficiency with Dropout
+eff_std = pT_uncer_lib.get_eff_hist(pt, np.array(DL1_1std))
 del DL1_score
+del DL1_1std_low
+del DL1_1std_high
 print("eff no Dropout = {}".format(eff_noDropout))
 print("eff Dropout = {}".format(eff_Dropout_DUQ))
 
@@ -77,8 +90,10 @@ pdf = PdfPages("output/{}.pdf".format(sys.argv[2]))
 plot_lib.plot_DL1r_pT(pt, DL1_score_noDropout, bins, DL1r_bins, pdf)
 pT_bins = []
 for i in range(len(bins)-1):
-	plot_lib.plot_1d_eff(np.array(hist_effs)[:,i], '[{}, {}] GeV'.format(bins[i], bins[i+1]), pdf)
+	#plot_lib.plot_1d_eff(np.array(hist_effs)[:,i], '[{}, {}] GeV'.format(bins[i], bins[i+1]), pdf)
 	pT_bins.append((bins[i]+bins[i+1])/2.)
 plot_lib.plot_eff_pT_1d(pT_bins, eff_noDropout, eff_Dropout_DUQ, eff_sys, pdf)
+plot_lib.plot_eff_pT_1d(pT_bins, eff_noDropout, eff_Dropout_DUQ, eff_std, pdf, substract=True)
+plot_lib.plot_eff_pT_1d_asy(pT_bins, eff_noDropout, eff_Dropout_DUQ, eff_Dropout_low, eff_Dropout_high, pdf)
 pdf.close()
 

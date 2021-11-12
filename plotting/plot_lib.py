@@ -38,15 +38,37 @@ def plot_eff_pT_2d(pT, eff, pT_bins, eff_bins, pdf):
 	fig.clear()
 	plt.close(fig)
 
-def plot_eff_pT_1d(pT_bins, eff_noDropout, eff_Dropout, eff_sys, pdf):
+def plot_eff_pT_1d(pT_bins, eff_noDropout, eff_Dropout, eff_sys, pdf, substract=False):
 	fig, (ax0, ax1) = plt.subplots(1,2, figsize=(12,5), sharey=False)
 	ax0.plot(pT_bins, eff_noDropout, '-', color='black', label = "w/o dropout")
 	ax0.plot(pT_bins, eff_Dropout, '-', color="blue", alpha=0.8, label = "w/ dropout")
-	ax0.fill_between(pT_bins, eff_Dropout - eff_sys, eff_Dropout + eff_sys, color="blue", alpha=0.6, label = "systematic")
+	if substract:
+		diff = np.absolute(eff_sys-eff_Dropout)
+		ax0.fill_between(pT_bins, eff_Dropout - diff, eff_Dropout + diff, color="blue", alpha=0.6, label = "systematic")
+	else:
+		ax0.fill_between(pT_bins, eff_Dropout - eff_sys, eff_Dropout + eff_sys, color="blue", alpha=0.6, label = "systematic")
 	ax0.set_xlabel(r"jet $p_{T}$ [GeV]")
 	ax0.set_ylabel("b-tagging efficiency")
 	ax0.legend(loc = "upper right")
-	ax1.plot(pT_bins, eff_sys/eff_Dropout, 'o', color='black')
+	if substract:
+		ax1.plot(pT_bins, np.absolute((eff_sys-eff_Dropout)/eff_Dropout), 'o', color='black')
+	else:
+		ax1.plot(pT_bins, eff_sys/eff_Dropout, 'o', color='black')
+	plot_style(r"jet $p_{T}$ [GeV]", "rel. uncertainty")
+	pdf.savefig()
+	fig.clear()
+	plt.close(fig)
+
+def plot_eff_pT_1d_asy(pT_bins, eff_noDropout, eff_Dropout, eff_sys_low, eff_sys_high, pdf):
+	fig, (ax0, ax1) = plt.subplots(1,2, figsize=(12,5), sharey=False)
+	ax0.plot(pT_bins, eff_noDropout, '-', color='black', label = "w/o dropout")
+	ax0.plot(pT_bins, eff_Dropout, '-', color="blue", alpha=0.8, label = "w/ dropout")
+	ax0.fill_between(pT_bins, eff_sys_low, eff_sys_high, color="blue", alpha=0.6, label = "systematic")
+	ax0.set_xlabel(r"jet $p_{T}$ [GeV]")
+	ax0.set_ylabel("b-tagging efficiency")
+	ax0.legend(loc = "upper right")
+	ax1.plot(pT_bins, (eff_sys_low-eff_Dropout)/eff_Dropout, 'o', color='black')
+	ax1.plot(pT_bins, (eff_sys_high-eff_Dropout)/eff_Dropout, 'o', color='black')
 	plot_style(r"jet $p_{T}$ [GeV]", "rel. uncertainty")
 	pdf.savefig()
 	fig.clear()
