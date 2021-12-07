@@ -12,3 +12,7 @@ __pycache__/
 models/
 output/
 
+# submission script
+condorSubmit/submit_*.sub
+condorSubmit/submit_*.sh
+condorSubmit/log/
