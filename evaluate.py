@@ -42,7 +42,7 @@ verbose = 0
 
 publicDL1 = False
 UmamiTrain = True
-selectTaggedJets = True
+selectTaggedJets = False
 
 DL1_cut = 0.46 # DL1 cut to each WP
 if(args.WP == 85):
@@ -146,7 +146,7 @@ for j in range(int(btagged_X.size / InputShape)):
 	if DL1_cut < DL1mean :
 		significance_mean.append((DL1mean - DL1_cut) / np.sqrt((DL1mean - CI[0])**2))
 	else:
-		significance.append((DL1mean - DL1_cut) / np.sqrt((DL1mean - CI[1])**2))
+		significance_mean.append((DL1mean - DL1_cut) / np.sqrt((DL1mean - CI[1])**2))
 
 	if DL1_cut < DL1median:
 		significance_median.append((DL1median - DL1_cut) / np.sqrt((DL1median - CI[0])**2))
