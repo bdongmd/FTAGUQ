@@ -16,7 +16,6 @@ parser = argparse.ArgumentParser(
 parser.add_argument('-o', '--output', type=str,
 		default="output/DL1_test.h5",
 		help='''set the output file path, where the results are stored''')
-
 parser.add_argument('-i', '--input_file', type=str,
 		default="input/MC16D_ttbar-test-ujets.h5",
 		help='Set name of preprocessed input validation file')
@@ -34,7 +33,7 @@ parser.add_argument('--nEnd', type=int,
 		help='ended jets')
 args = parser.parse_args()
 
-n_predictions = 10000 
+n_predictions = 10000
 fc = 0.08 
 
 saveData = True
@@ -71,9 +70,7 @@ elif UmamiTrain:
 	dropout_rate = [0.1, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]
 	InputShape = 44
 	test_model = model.NN_model(InputShape=InputShape, h_layers=units, lr=lr, drops=dropout_rate, dropout=False)
-	test_model_Dropout = model.NN_model(InputShape=InputShape, h_layers=units, lr=lr, drops=dropout_rate, dropout=True)
 	test_model.load_weights('/eos/user/b/bdong/DUQ/UmamiTrain/DL1r-PFlow_new-taggers-stats-22M/model_epoch149.h5')
-	test_model_Dropout.load_weights('/eos/user/b/bdong/DUQ/UmamiTrain/DL1r-PFlow_new-taggers-stats-22M/model_epoch149.h5')
 else:
 	InputShape = 44
 	h_layers=[72, 57, 60, 48, 36, 24, 12, 6]
@@ -135,10 +132,11 @@ for j in range(int(btagged_X.size / InputShape)):
 		print('{} Progress -- evaltued {} / {} jets with Dropout enabled.'.format(datetime.now().strftime("%H:%M:%S"), j, int(btagged_X.size / InputShape)))
 
 	test_data =  np.vstack([btagged_X[j]] * n_predictions)
+	test_model_Dropout = model.NN_model(InputShape=InputShape, h_layers=units, lr=lr, drops=dropout_rate, dropout=True)
+	test_model_Dropout.load_weights('/eos/user/b/bdong/DUQ/UmamiTrain/DL1r-PFlow_new-taggers-stats-22M/model_epoch149.h5')
 	dropout = test_model_Dropout.predict(test_data, verbose = verbose)
-	
 	dropout_DL1 = np.log(dropout[:,2] / (fc*dropout[:,1] + (1-fc)*dropout[:,0]))
-
+	
 	CI = np.quantile(dropout_DL1, [lbound, ubound], axis=0)
 	DL1mean = np.mean(dropout_DL1)
 	DL1median = np.median(dropout_DL1)
@@ -171,4 +169,3 @@ if saveData:
 	fout.create_dataset('DL1_score_noDropout', data=np.array(btagged_DL1))
 	fout.create_dataset('scaled_pt', data=np.array(btagged_X[:,1]))
 	fout.close()
-
